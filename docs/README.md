@@ -14,6 +14,6 @@ The two main areas of interest are:
 
 Contributing partners:
 + [ETHZ CSCS](http://www.cscs.ch)
-+ CaSToRC
-+ CINECA
-+ NCSA
++ [CaSToRC](https://www.cyi.ac.cy)
++ [CINECA](http:www.cineca.it)
++ [NCSA](http://www.scc.acad.bg)
