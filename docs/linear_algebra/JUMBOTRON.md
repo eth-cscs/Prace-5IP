@@ -1,2 +1,2 @@
 # Linear Algebra
-Improving the performance of a well standardized API.
+Developing a common API for different libraries.

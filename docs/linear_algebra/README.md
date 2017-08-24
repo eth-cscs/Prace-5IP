@@ -4,7 +4,7 @@ The use of the LAPACK and ScaLAPACK libraries for numerical linear algebra is ub
 and many vendors and software providers use it as the basis of their own high-performance math libraries.
 However, there currently exists no distributed GPU-enabled library.
 Other packages for linear algebra with GPU support (or without GPU support but with better performances) exist,
-but they have different interfaces, therefore major change in the application code to adopt them.
+but they have different interfaces, therefore major changes in the application code are needed to adopt them.
 
 # Goals
 
@@ -34,7 +34,7 @@ The DLA library supported are:
 - D-Plasma (ParSEC) (Not yet supported)
 - Chameleon (StarPU) (Not yet supported)
 
-For more information of which routine of each package is supported see [the list of supported routines](List of supported routines) 
+For more information of which routine of each package is supported see [the list of supported routines](#list-of-supported-dla-packages)
 
 ## List of supported routines
 
