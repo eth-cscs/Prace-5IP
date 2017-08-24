@@ -12,3 +12,8 @@ The two main areas of interest are:
 + [Linear Algebra](linear_algebra)
 + [Molecular Dynamics](molecular_dynamics)
 
+Contributing partners:
++ [http://www.cscs.ch]ETHZ CSCS
++ CaSToRC
++ CINECA
++ NCSA
