@@ -13,7 +13,7 @@ The two main areas of interest are:
 + [Molecular Dynamics](molecular_dynamics)
 
 Contributing partners:
-+ [http://www.cscs.ch]ETHZ CSCS
++ [ETHZ CSCS](http://www.cscs.ch)
 + CaSToRC
 + CINECA
 + NCSA
