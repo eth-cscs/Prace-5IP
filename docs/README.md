@@ -18,9 +18,10 @@ The work described in this task will be delivered to the CoEs, and close collabo
 
 ## Linear Algebra Libraries
 
-The use of the LAPACK and ScaLAPACK libraries for numerical linear algebra is ubiquitous in high-performance computing applications, and many vendors and software providers use it as the basis of their own high-performance math libraries. However, there currently exists no distributed GPU-enabled library for dense linear algebra (cf. PBLAS/ScaLAPACK). 
+The use of the LAPACK and ScaLAPACK libraries for numerical linear algebra is ubiquitous in high-performance computing applications, and many vendors and software providers use it as the basis of their own high-performance math libraries. However, there currently exists no distributed GPU-enabled library. Other packages for linear algebra with GPU support exists but they have different interfaces, therefore major change in the application code to adopt them. 
 
-We intend to systematically extend the MAGMA (Matrix Algebra on GPU and Multicore Architectures) library, in collaboration with its developers, to distributed architectures. Adoption of this library in community codes in materials science and electronic structure will be facilitated by providing access via a standard interface, hiding the underlying implementation from the user and thus avoiding the need for code modification. 
+We intend to develop a distributed linear algebra (DLA) interface which allows to choose the library used for each call at runtime.
+This allow to choose the best performing implementation without no further major changes in the application code.
 
 For more information follow the link [Linear Algebra](linear_algebra)
 
