@@ -16,7 +16,7 @@ We intend to develop a distributed linear algebra (DLA) interface with the follo
 # Potential Benefit
 
 Each Application which uses ScaLAPACK will be able to use the DLA interface with minor changes in the code,
-and can choose the best pperforming DLA package to speed-up the application.
+and can benefit from the use of the best performing DLA package to increase the performance of the application.
 
 # DLA Interface
 
@@ -26,16 +26,19 @@ The DLA interface features:
 - DLA routines C++ wrappers (Not yet supported)
 - DLA routines Fortran wrappers (Not yet supported)
 
-# List of DLA packages
+## List of supported DLA packages
 
-- ScaLAPACK (MKL, Libsci, Netlib, ...)
-- ELPA
-- D-Plasma (ParSEC)
-- Chameleon (StarPU)
+The DLA library supported are:
+- ScaLAPACK (MKL, Libsci, Netlib, ...) (Not yet supported)
+- ELPA (Not yet supported)
+- D-Plasma (ParSEC) (Not yet supported)
+- Chameleon (StarPU) (Not yet supported)
 
-# List of supported routines
+For more information of which routine of each package is supported see [the list of supported routines](List of supported routines) 
 
-# List of routines with planned support
+## List of supported routines
+
+## List of routines with planned support
 
 The routines which will be available are (including the ScaLAPACK corresponding name):
 - Matrix-matrix multiplication (p\*gemm)
