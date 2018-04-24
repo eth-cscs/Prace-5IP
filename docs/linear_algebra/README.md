@@ -22,21 +22,16 @@ and can benefit from the use of the best performing DLA package to increase the 
 
 The DLA interface features:
 - Communicator utilities
-- Matrix class (Not yet supported)
-- DLA routines C++ wrappers (Not yet supported)
-- DLA routines Fortran wrappers (Not yet supported)
+- Matrix class
+- DLA routines C++ wrappers
+- DLA routines Fortran wrappers
 
-## List of supported DLA packages
+## List of DLA packages
 
 The DLA library supported are:
-- ScaLAPACK (MKL, Libsci, Netlib, ...) (Not yet supported)
-- ELPA (Not yet supported)
-- D-Plasma (ParSEC) (Not yet supported)
-- Chameleon (StarPU) (Not yet supported)
-
-For more information of which routine of each package is supported see [the list of supported routines](#list-of-supported-dla-packages)
-
-## List of supported routines
+- ScaLAPACK (MKL, Libsci, Netlib, ...)
+- ELPA
+- D-Plasma (ParSEC)
 
 ## List of routines with planned support
 
