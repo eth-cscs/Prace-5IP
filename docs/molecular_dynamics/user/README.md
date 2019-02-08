@@ -1,3 +1,12 @@
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/molecular_dynamics/">Home</a></li>
+    <li class="breadcrumb-item"><a href="/molecular_dynamics/dev/">Developer API</a></li>
+    <li class="breadcrumb-item active" aria-current="page">User API</a></li>
+    <li class="breadcrumb-item"><a href="/molecular_dynamics/gromacs/">GROMACS refactor</a></li>
+  </ol>
+</nav>
+
 ### User-Facing Code (app-agnostic)
 
 This should be usable outside of GROMACS in custom MD codes as a non-bonded force calculator. In the same spirit as Scalapack routines can be called for basic matrix operations.

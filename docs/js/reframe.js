@@ -418,7 +418,7 @@ namespace.__correct_domain = function()
   // console.log('window.location.pathname: ' + window.location.pathname);
   // console.log('window.location.domain: ' + window.location.domain);
 
-  var folders = [ 'linear_algebra', 'molecular_dynamics', '' ]
+  var folders = [ 'linear_algebra', 'molecular_dynamics', 'user', 'dev', 'gromacs', 'molecular_dynamics/user', 'molecular_dynamics/dev', 'molecular_dynamics/gromacs', '' ]
   var paths = window.location.pathname.split('/');
   paths.forEach(function(element) {
     // console.log(element);

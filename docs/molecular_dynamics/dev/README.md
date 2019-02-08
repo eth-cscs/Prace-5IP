@@ -1,3 +1,12 @@
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/molecular_dynamics/">Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Developer API</a></li>
+    <li class="breadcrumb-item"><a href="/molecular_dynamics/user/">User API</a></li>
+    <li class="breadcrumb-item"><a href="/molecular_dynamics/gromacs/">GROMACS refactor</a></li>
+  </ol>
+</nav>
+
 # Developer Facing API
 
 # API Abstractions Overview

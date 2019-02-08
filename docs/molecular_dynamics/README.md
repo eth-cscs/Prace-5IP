@@ -1,10 +1,11 @@
-<!-- # Regression Check Pipeline
-
-The backbone of the ReFrame regression framework is the pipeline of the regression check.
-This is a set of well defined phases that each regression test goes through during its lifetime.
-The figure below depicts this pipeline in detail.
-
-![pipeline.png](img/pipeline.png) -->
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item active" aria-current="page">Home</li>
+    <li class="breadcrumb-item"><a href="/molecular_dynamics/dev/">Developer API</a></li>
+    <li class="breadcrumb-item"><a href="/molecular_dynamics/user/">User API</a></li>
+    <li class="breadcrumb-item"><a href="/molecular_dynamics/gromacs/">GROMACS refactor</a></li>
+  </ol>
+</nav>
 
 # Motivation
 
