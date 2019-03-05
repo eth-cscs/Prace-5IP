@@ -23,22 +23,22 @@ The user-facing API contains the
 
 ## The `NBICalculator`
 
-The `NBICalculator` is the entry point for the user-facing API. It encompasses all the basic functionalities that a force calculator can perform, such as, compute forces, produce the forces and/or virial tensors and retrieve energy groups, given a set of coordinates and non-bonded force field parameters. Additionally, its constructor accepts a hardware related `enum` which controls in which hardware the forces should be computed, in case, the underlying hardware and library support different accelerators.
+The `NBICalculator` is the entry point for the user-facing API. It encompasses all the basic functionalities that a force calculator can perform, such as, compute forces, produce the forces and/or virial tensors and retrieve energy groups, given a set of coordinates and non-bonded force field parameters. Additionally, its constructor accepts a hardware related `enum` which controls in which hardware the forces should be computed, in case, the underlying hardware and library support different hardware type. By default the `NBICalculator` is configured to run on the CPU.
 
 ```c++
 class NBICalculator
 {
 public:
-    enum Accelerator { CPU, GPU };
+    enum HardwareType { CPU, GPU };
 
-    NBICalculator(Coordinates coords, NBParams params,
-                  NBICalculator::Accelerator accelerator = NBICalculator::CPU);
+    NBICalculator(Coordinates &coords, NBParams &params,
+                  NBICalculator::HardwareType hardwareType = NBICalculator::CPU);
 
     ForceOutput calculateForces();
 
     EnergyGroups getEnergyGroups();
 
-    void setCoordinates();
+    void setCoordinates(Coordinates &coords);
 }
 ```
 
@@ -46,7 +46,7 @@ public:
 
 ## The `Coordinates` object
 
-> TODO: add text about the flexibility and portability of the `NBICalculator` focusing on how much it can help prototyping.
+> TODO: add text about the simplicity of the `Coordinates` class in order to facilitate the easy of prototyping. Discuss the
 
 
 ```c++
@@ -55,26 +55,24 @@ class Coordinates<T>
 public:
     Coordinates();
 
-    void setCoordinates(std::vector<float> &coords);
-    void setCoordinates(std::vector<float> &x, std::vector<float> &y, std::vector<float> &z);
+    void setCoordinates(T &coords);
+    void setCoordinates(T &x, T &y, T &z);
 
-    void getCoordinates(std::vector<float> &coords);
-    void getCoordinates(std::vector<float> &x, std::vector<float> &y, std::vector<float> &z);
+    void getCoordinates(T &coords);
+    void getCoordinates(T &x, T &y, T &z);
 }
 
+using Simple = std::vector<float>;
 class Coordinates<Simple>
 {
 public:
     Coordinates();
 
-    void setCoordinates(std::vector<float> &coords);
-    void setCoordinates(std::vector<float> &x, std::vector<float> &y, std::vector<float> &z);
+    void setCoordinates(Simple &coords);
+    void setCoordinates(Simple &x, Simple &y, Simple &z);
 
-    void getCoordinates(std::vector<float> &coords);
-    void getCoordinates(std::vector<float> &x, std::vector<float> &y, std::vector<float> &z);
-
-private:
-    std:std::vector<float> coord;
+    void getCoordinates(Simple &coords);
+    void getCoordinates(Simple &x, Simple &y, Simple &z);
 }
 ```
 
@@ -165,11 +163,9 @@ int main {
         energy_groups =  nbcalc.getEnergyGroups();
         forces += restraint(coord, energy_groups);
 
-        Coordinates<simple> current_pos = nbcalc.getCoordinates();
-
         integrate(coord, velocities, forces, masses);
 
-        nbcalc.setCoordinates(current_pos);
+        nbcalc.setCoordinates(coord);
     }
 }
 ```
