@@ -16,18 +16,18 @@ The key idea is to have a collection of static force calculation schedules, that
 
 ```c++
 class AbstractForceSchedule {
-protected:==
-    SimulationState 	simuStat_;	// contains handles to system and state variables
-    
-    GMX_Communicator 	cr_;		// app-specific data structures for internal tasks
-    ForceVector 		fr_;
-    ForceVirial 		vir_;
-    PerfCounter 		pc_;
-    
+protected:
+    SimulationState     simuStat_;    // contains handles to system and state variables
+
+    GMX_Communicator    cr_;        // app-specific data structures for internal tasks
+    ForceVector         fr_;
+    ForceVirial         vir_;
+    PerfCounter         pc_;
+
     void init(/* app-specific args */);
-public:    
+public:
     virtual void computeStep(/* flags */);
-    
+
     friend class ScheduleBuilder;
 };
 ```
@@ -62,18 +62,18 @@ The task of selecting a particular schedule for a given node, or a given problem
 
 ```c++
 class ScheduleBuilder {
-private:    
-    ScheduleType type_ 					= None;
-    bool 		 experimentalSchedules_ = false;
+private:
+    ScheduleType type_                     = None;
+    bool          experimentalSchedules_ = false;
 public:
     ScheduleBuilder(bool experimentalSchedules)
         : experimentalSchedules_(experimentalSchedules) {}
-    
+
     void selectSchedule(/* input/execution context*/);
     void setScheduleType(ScheduleType type);
-    
+
 /*! Wraps around the protected init function in AbstractForceSchedule */
-    AbstractForceSchedule* generateSchedule(/* app-specific args */);  		
+    AbstractForceSchedule* generateSchedule(/* app-specific args */);
 };
 ```
 
@@ -81,7 +81,7 @@ public:
 
 ## Decorated Schedules for Neighbour Search
 
-In the current implementations, one conditionality that complicates maintainability of a force schedule is neighbor search (NS). As we see in the illustrated schedule, components of NS are interleaved with other tasks to maximize overlap. The order is different in the case where the MD step occurs without NS. 
+In the current implementations, one conditionality that complicates maintainability of a force schedule is neighbor search (NS). As we see in the illustrated schedule, components of NS are interleaved with other tasks to maximize overlap. The order is different in the case where the MD step occurs without NS.
 
 Separating these two flows would make the code more readable, but at the cost of code duplication. One way to mitigate this matter is by using decorated schedules. NS occurs once every 20-100 steps depending on the problem. At the initial cost of reduced overlap in an NS step, developers gain maintainability, reusability and modularity.
 
@@ -89,17 +89,17 @@ Separating these two flows would make the code more readable, but at the cost of
 class NSSchedule : AbstractForceSchedule
 {
 public:
-	NSSchedule(AbstractForceSchedule *noNS_schedule);
-    
+    NSSchedule(AbstractForceSchedule *noNS_schedule);
+
     void computeStep(/* flags */)
     {
-    	// Steps to calculate NS/pairlists
-    	
-    	inner_->computeStep(/* flags */);
+        // Steps to calculate NS/pairlists
+
+        inner_->computeStep(/* flags */);
     }
-    
+
     void setInnerSchedule(AbstractForceSchedule *noNS_schedule);
-    
+
 protected:
     AbstractForceSchedule *inner_;
 }
@@ -109,40 +109,40 @@ The added advantage is that the NS code is fully separated from the underlying f
 
 ## Multi-Level API
 
-Make two aspects of the GMX API. 
+Make two aspects of the GMX API.
 
 ### Developer-Facing Abstraction (gmx-specific)
 
-This part would setup the GROMACS-specific data structures, domain decomposition, communicator, load balancing, etc concerning the force-calculations to initialize an `IForceSchedule` object which would then be called by the high level API. 
+This part would setup the GROMACS-specific data structures, domain decomposition, communicator, load balancing, etc concerning the force-calculations to initialize an `IForceSchedule` object which would then be called by the high level API.
 
 ```c++
 class NBICalculator {
 private:
-    ScheduleBuilder 				scheduleBuilder_; 	// build & init schedules
-    std::shared_ptr<IForceSchedule> schedule_; 			// compute forces/energy/potential
-    MDBookKeeping 					mdBook_; 			// maintain flags on DD, NS, etc
-    
+    ScheduleBuilder                 scheduleBuilder_;     // build & init schedules
+    std::shared_ptr<IForceSchedule> schedule_;             // compute forces/energy/potential
+    MDBookKeeping                     mdBook_;             // maintain flags on DD, NS, etc
+
 public:
-	NBICalculator(/* args */) {
-        /* init ScheduleBuilder 
+    NBICalculator(/* args */) {
+        /* init ScheduleBuilder
         --------------------------*/
         /*
         create GROMACS objects like DD, commrec,
         using the system data
         */
         ...
-        scheduleBuilder_.selectSchedule(/* input/execution 			context*/);
+        scheduleBuilder_.selectSchedule(/* input/execution             context*/);
         schedule_ = scheduleBuilder_.generateSchedule(/* gmx-specific args */);
         mdBook.init(schedule_, system);
-	}
-    
-    forceVector calculateForces() {
-		return schedule_->computeStep(mdBook_.flags);
     }
-    
+
+    forceVector calculateForces() {
+        return schedule_->computeStep(mdBook_.flags);
+    }
+
     void update() {
-        mdBook.sync(system); 						// updates if NS is needed, sets flags
-        											// which quantities need to be computed
+        mdBook.sync(system);                         // updates if NS is needed, sets flags
+                                                    // which quantities need to be computed
     }
 };
 ```
