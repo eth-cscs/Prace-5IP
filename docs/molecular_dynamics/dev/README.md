@@ -26,7 +26,9 @@ private:
     MDBookKeeping 					mdBook_; 			// maintain flags on DD, NS, etc
     
 public:
-	NBICalculator(/* args */) {
+	NBICalculator(Coordinates coords, NBparams params,
+                  enum::NBICalculator type = NBICalculator::AUTO) 
+    {
         /* init ScheduleBuilder 
         --------------------------*/
         /*
@@ -39,14 +41,13 @@ public:
         mdBook.init(schedule_, system);
 	}
     
-    forceVector calculateForces() {
+    ForceOutput calculateForces() {
 		return schedule_->computeStep(mdBook_.flags);
     }
     
-    void update() {
-        mdBook.sync(system); 						// updates if NS is needed, sets flags
-        											// which quantities need to be computed
-    }
+	EnergyGroups getEnergyGroups();
+    void setCoordinates();
+    
 };
 ```
 
@@ -59,9 +60,11 @@ The key idea is to have a collection of static force calculation schedules, that
 ```c++
 class AbstractForceSchedule {
 protected:
-    SimulationState     simuStat_;    // contains handles to system and state variables
-
-    GMX_Communicator    cr_;        // app-specific data structures for internal tasks
+    // contains handles to app-specific system and state data structures
+    SimulationState     simuStat_;    
+	
+    // app-specific data structures for internal tasks
+    GMX_Communicator    cr_;        
     ForceVector         fr_;
     ForceVirial         vir_;
     PerfCounter         pc_;
