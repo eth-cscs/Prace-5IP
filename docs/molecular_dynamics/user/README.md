@@ -23,14 +23,16 @@ The user-facing API contains the
 
 ## The `NBICalculator`
 
-The `NBICalculator` is the entry point for the API. It encompasses all the basic functionalities that a force calculator can do, get coordinates and non-bonded force field parameters, compute forces, produce the forces, virial and retrieve energy groups. Additionally, its constructor accepts a hardware related `enum` which describes in which hardware the forces should be computed.
+The `NBICalculator` is the entry point for the user-facing API. It encompasses all the basic functionalities that a force calculator can perform, such as, compute forces, produce the forces and/or virial tensors and retrieve energy groups, given a set of coordinates and non-bonded force field parameters. Additionally, its constructor accepts a hardware related `enum` which controls in which hardware the forces should be computed, in case, the underlying hardware and library support different accelerators.
 
 ```c++
 class NBICalculator
 {
 public:
+    enum Accelerator { CPU, GPU };
+
     NBICalculator(Coordinates coords, NBParams params,
-                  enum::NBICalculator type = NBICalculator::AUTO);
+                  NBICalculator::Accelerator accelerator = NBICalculator::CPU);
 
     ForceOutput calculateForces();
 
@@ -40,8 +42,12 @@ public:
 }
 ```
 
+> TODO: add text about the flexibility and portability of the `NBICalculator` focusing on how much it can help prototyping.
 
-## The `Coordintates` object
+## The `Coordinates` object
+
+> TODO: add text about the flexibility and portability of the `NBICalculator` focusing on how much it can help prototyping.
+
 
 ```c++
 class Coordinates<T>
