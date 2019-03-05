@@ -92,8 +92,14 @@ public:
 
     void setCoordinates();
 }
+```
 
 
+
+
+
+
+```c++
 // User provided functions
 void integrate(Coordinates<Simple> &coord, std::vector<float>&velocities,
                ForceOutput const &forces, std::vector<float> const &masses);
@@ -142,7 +148,9 @@ int main {
         nbcalc.setCoordinates(current_pos);
     }
 }
+```
 
+```c++
 
 // User provided functions
 void integrate(Coordinates<Simple> &coord, std::vector<float>&velocities,
