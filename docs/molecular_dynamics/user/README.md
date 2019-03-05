@@ -7,11 +7,41 @@
   </ol>
 </nav>
 
-### User-Facing Code (app-agnostic)
+# User-Facing Code (app-agnostic)
 
-This should be usable outside of GROMACS in custom MD codes as a non-bonded force calculator. In the same spirit as Scalapack routines can be called for basic matrix operations.
+The user facing API is meant to be used in custom user-written MD codes as a non-bonded force calculator. The user is meant to be a domain scientist with minimal knowledge of C++, which is willing to prototype a MD dynamics application with minimal effort. Below we show two use cases where NBLib can be used independently of any library implementation of the API, let it the GROMACS, Amber, LAMMPS or any other custom implementation, in the same spirit as Scalapack routines can be called for basic matrix operations.
+
+Library implementations of this API are open to make use of any internal data structure that fits best the hardware and parallel programming paradigm supported. For now, the user-facing API provides simple input and output data structures that can be easily converted to more complex formats. Further extensions to support different input and output data structures are planned in the future, based on actual library implementations of this API, which would in turn decrease the input/output data conversion.
+
+The user-facing API contains the
+
+* NBICalculator
+* Coordinates
+* NBParams
+* ForceOuput
+* EnergyGroups
+
+## The `NBICalculator`
+
+The `NBICalculator` is the entry point for the API. It encompasses all the basic functionalities that a force calculator can do, get coordinates and non-bonded force field parameters, compute forces, produce the forces, virial and retrieve energy groups. Additionally, its constructor accepts a hardware related `enum` which describes in which hardware the forces should be computed.
+
+```c++
+class NBICalculator
+{
+public:
+    NBICalculator(Coordinates coords, NBParams params,
+                  enum::NBICalculator type = NBICalculator::AUTO);
+
+    ForceOutput calculateForces();
+
+    EnergyGroups getEnergyGroups();
+
+    void setCoordinates();
+}
+```
 
 
+## The `Coordintates` object
 
 ```c++
 class Coordinates<T>
@@ -40,11 +70,14 @@ public:
 private:
     std:std::vector<float> coord;
 }
+```
 
-class NBparams
+
+```c++
+class NBParams
 {
 public:
-    NBparams();
+    NBParams();
 
     void setSRType(enum::nbSRtype type,
                    float rlist,
@@ -64,7 +97,9 @@ public:
     void setParticleCharges(std::vector<float> q);
     void setParticleMasses(std::vector<float> m);
 }
+```
 
+```c++
 class ForceOutput
 {
 public:
@@ -78,19 +113,6 @@ class EnergyGroups
 public:
     ForceOutput();
     std::vector<float> getEnergyGroups();
-}
-
-class NBICalculator
-{
-public:
-    NBICalculator(Coordinates coords, NBparams params,
-                  enum::NBICalculator type = NBICalculator::AUTO);
-
-    ForceOutput calculateForces();
-
-    EnergyGroups getEnergyGroups();
-
-    void setCoordinates();
 }
 ```
 
@@ -106,9 +128,6 @@ void integrate(Coordinates<Simple> &coord, std::vector<float>&velocities,
 
 ForceOutput restraint(Coordinates<Simple> &coord, EnergyGroups &energy_groups);
 
-// addMyThermostat
-// addMyBarostat
-
 int main {
 
     // Input Data Feed
@@ -118,14 +137,14 @@ int main {
     std::vector<float> velocities = inputs.getVelocities();
     std::vector<float> masses = inputs.getMasses();
 
-    NBparams nbparams = inputs.getNBparams();
+    NBParams NBParams = inputs.getNBParams();
     // End of Data Feed
 
     // Auxiliary data structures
     ForceOutput forces;
 
     // NB lib API
-    NBICalculator<nblib> nbcalc(coord, nbparams);
+    NBICalculator<nblib> nbcalc(coord, NBParams);
 
     bool withVirial = false;
     for (int step = 0; i < nsteps; i++)
@@ -142,7 +161,6 @@ int main {
 
         Coordinates<simple> current_pos = nbcalc.getCoordinates();
 
-        // mybarostat.compute(particles, topology, simulation)
         integrate(coord, velocities, forces, masses);
 
         nbcalc.setCoordinates(current_pos);
@@ -173,14 +191,14 @@ int main {
     std::vector<float> masses = inputs.getMasses();
     BondedTopology bondedTopology = inputs.getBondedTopology();
 
-    NBparams nbparams = inputs.getNBparams();
+    NBParams NBParams = inputs.getNBParams();
     // End of Data Feed
 
     // Auxiliary data structures
     ForceOutput forces;
 
     // NB lib API
-    NBICalculator<nblib> nbcalc(coord, nbparams);
+    NBICalculator<nblib> nbcalc(coord, NBParams);
 
     bool withVirial = false;
     for (int step = 0; i < nsteps; i++)
