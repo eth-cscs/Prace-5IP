@@ -58,18 +58,18 @@ The key idea is to have a collection of static force calculation schedules, that
 
 ```c++
 class AbstractForceSchedule {
-protected:==
-    SimulationState 	simuStat_;	// contains handles to system and state variables
-    
-    GMX_Communicator 	cr_;		// app-specific data structures for internal tasks
-    ForceVector 		fr_;
-    ForceVirial 		vir_;
-    PerfCounter 		pc_;
-    
+protected:
+    SimulationState     simuStat_;    // contains handles to system and state variables
+
+    GMX_Communicator    cr_;        // app-specific data structures for internal tasks
+    ForceVector         fr_;
+    ForceVirial         vir_;
+    PerfCounter         pc_;
+
     void init(/* app-specific args */);
-public:    
+public:
     virtual void computeStep(/* flags */);
-    
+
     friend class ScheduleBuilder;
 };
 ```
@@ -104,18 +104,18 @@ The task of selecting a particular schedule for a given node, or a given problem
 
 ```c++
 class ScheduleBuilder {
-private:    
-    ScheduleType type_ 					= None;
-    bool 		 experimentalSchedules_ = false;
+private:
+    ScheduleType type_                     = None;
+    bool          experimentalSchedules_ = false;
 public:
     ScheduleBuilder(bool experimentalSchedules)
         : experimentalSchedules_(experimentalSchedules) {}
-    
+
     void selectSchedule(/* input/execution context*/);
     void setScheduleType(ScheduleType type);
-    
+
 /*! Wraps around the protected init function in AbstractForceSchedule */
-    AbstractForceSchedule* generateSchedule(/* app-specific args */);  		
+    AbstractForceSchedule* generateSchedule(/* app-specific args */);
 };
 ```
 
@@ -123,7 +123,7 @@ public:
 
 ## Decorated Schedules for Neighbour Search
 
-In the current implementations, one conditionality that complicates maintainability of a force schedule is neighbor search (NS). As we see in the illustrated schedule, components of NS are interleaved with other tasks to maximize overlap. The order is different in the case where the MD step occurs without NS. 
+In the current implementations, one conditionality that complicates maintainability of a force schedule is neighbor search (NS). As we see in the illustrated schedule, components of NS are interleaved with other tasks to maximize overlap. The order is different in the case where the MD step occurs without NS.
 
 Separating these two flows would make the code more readable, but at the cost of code duplication. One way to mitigate this matter is by using decorated schedules. NS occurs once every 20-100 steps depending on the problem. At the initial cost of reduced overlap in an NS step, developers gain maintainability, reusability and modularity.
 
@@ -131,21 +131,20 @@ Separating these two flows would make the code more readable, but at the cost of
 class NSSchedule : AbstractForceSchedule
 {
 public:
-	NSSchedule(AbstractForceSchedule *noNS_schedule);
-    
+    NSSchedule(AbstractForceSchedule *noNS_schedule);
+
     void computeStep(/* flags */)
     {
-    	// Steps to calculate NS/pairlists
-    	
-    	inner_->computeStep(/* flags */);
+        // Steps to calculate NS/pairlists
+
+        inner_->computeStep(/* flags */);
     }
-    
+
     void setInnerSchedule(AbstractForceSchedule *noNS_schedule);
-    
+
 protected:
     AbstractForceSchedule *inner_;
 }
 ```
 
 The added advantage is that the NS code is fully separated from the underlying force calculation routines. Irrespective of which concrete schedule is initialized (say forces, forces+virial, energy-only, etc), the NSSchedule object can potentially adapt at runtime accordingly.
-
