@@ -10,6 +10,48 @@
 
 # API Abstractions Overview
 
+## Developer-Facing Abstraction (application-specific)
+
+GROMACS is the first contender to implement this API on. This needs significant functionality from GROMACS to be exposed. There needs to be an interface that would encapsulate the details of implementation and specific data structures used within GROMACS from a domain scientist dealing with more simplified representation of the system being simulated.
+
+### NBICalculator Abstraction
+
+The constructor would setup the GROMACS-specific data structures, domain decomposition, communicator, load balancing, etc concerning the force-calculations to initialize an `IForceSchedule` object which would then be called by the high level API. The aforementioned abstractions will be introduced in detail in the following section. However, this forms the basis of the user-facing API that aims to connect user provided data with the nuts and bolts of the application in focus.
+
+```c++
+class NBICalculator {
+private:
+    ScheduleBuilder 				scheduleBuilder_; 	// build & init schedules
+    std::shared_ptr<IForceSchedule> schedule_; 			// compute forces/energy/potential
+    MDBookKeeping 					mdBook_; 			// maintain flags on DD, NS, etc
+    
+public:
+	NBICalculator(/* args */) {
+        /* init ScheduleBuilder 
+        --------------------------*/
+        /*
+        create GROMACS objects like DD, commrec,
+        using the system data
+        */
+        ...
+        scheduleBuilder_.selectSchedule(/* input/execution 			context*/);
+        schedule_ = scheduleBuilder_.generateSchedule(/* gmx-specific args */);
+        mdBook.init(schedule_, system);
+	}
+    
+    forceVector calculateForces() {
+		return schedule_->computeStep(mdBook_.flags);
+    }
+    
+    void update() {
+        mdBook.sync(system); 						// updates if NS is needed, sets flags
+        											// which quantities need to be computed
+    }
+};
+```
+
+The schedule API underneath would have it's own high performance implementation that overlaps computation, communication and reduction tasks. There would be customized schedules for architecture. algorithms and physics being simulated. This would be a part of GROMACS itself and need not be exposed outside as its implementation details are not so important.
+
 ## Force Schedule API
 
 The key idea is to have a collection of static force calculation schedules, that are hand-crafted for performance given the algorithm, execution context and required quantities. An abstract base class summarizes the minimum set of capabilities for a schedule.
@@ -107,44 +149,3 @@ protected:
 
 The added advantage is that the NS code is fully separated from the underlying force calculation routines. Irrespective of which concrete schedule is initialized (say forces, forces+virial, energy-only, etc), the NSSchedule object can potentially adapt at runtime accordingly.
 
-## Multi-Level API
-
-Make two aspects of the GMX API. 
-
-### Developer-Facing Abstraction (gmx-specific)
-
-This part would setup the GROMACS-specific data structures, domain decomposition, communicator, load balancing, etc concerning the force-calculations to initialize an `IForceSchedule` object which would then be called by the high level API. 
-
-```c++
-class NBICalculator {
-private:
-    ScheduleBuilder 				scheduleBuilder_; 	// build & init schedules
-    std::shared_ptr<IForceSchedule> schedule_; 			// compute forces/energy/potential
-    MDBookKeeping 					mdBook_; 			// maintain flags on DD, NS, etc
-    
-public:
-	NBICalculator(/* args */) {
-        /* init ScheduleBuilder 
-        --------------------------*/
-        /*
-        create GROMACS objects like DD, commrec,
-        using the system data
-        */
-        ...
-        scheduleBuilder_.selectSchedule(/* input/execution 			context*/);
-        schedule_ = scheduleBuilder_.generateSchedule(/* gmx-specific args */);
-        mdBook.init(schedule_, system);
-	}
-    
-    forceVector calculateForces() {
-		return schedule_->computeStep(mdBook_.flags);
-    }
-    
-    void update() {
-        mdBook.sync(system); 						// updates if NS is needed, sets flags
-        											// which quantities need to be computed
-    }
-};
-```
-
-The schedule API underneath would have it's own high performance implementation that overlaps computation, communication and reduction tasks. There would be customized schedules for architecture. algorithms and physics being simulated. This would be a part of GROMACS itself and need not be exposed outside as its implementation details are not so important.
