@@ -232,40 +232,6 @@ The interface only consists of data and objects relevant to the simulation from 
 
 The NBCalculator API would be external aiming to encapsulate the implementation details of the application from the end user. It caters to those who need a non-bonded force calculator much the same way as one might need a linear-system solver.
 
-## Reusable Utilities for Schedules
-
-The current implementation of `do_forcecutsVERLET(...)` performs many operation sequences that could serve as reusable utilities in other custom schedule as these would always be executed together.
-
-The other benefit of doing so is to greatly improve code readability in the schedule and thereby encapsulate implementation details for developers assembling a customized schedule. It would also help shrink the lines of code and reduce code duplication.
-
-Some examples can be:
-
-```c++
-void initShiftVectors(...);
-void initPMEonDevice(...);
-```
-
-It can make use of objects that are pointed by the members of `ForceSchedule` class.
-
-```c++
-void doNSGridding() {
-    if (neighbourSearch) {
-        auto shiftVec = calcShiftVectors(system, bondGraph);
-        system.applyTransformation(shiftVec);
-
-        if (domainDecomposition) {
-            // scattter particle data across ranks before gridding
-			putParticlesOnGridNonLocal(...);
-        }
-        else {
-            // perform gridding locally
-            putParticlesOnGrid(...);
-        }
-        setAtomData(...);
-    }
-}
-```
-
 
 <!-- TODO: write an appropriate name -->
 ## Use case A
