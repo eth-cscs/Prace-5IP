@@ -24,7 +24,7 @@ However, there currently exists no distributed GPU-enabled library.
 Other packages for linear algebra with GPU support exists but they have different interfaces,
 therefore major changes in the application code are required to adopt them.
 
-We intend to develop a distributed linear algebra (DLA) interface which allows to choose the library used for each call at runtime.
+The distributed linear algebra (DLA) interface allows to choose the library used for each call at runtime.
 This allows to choose the best performing implementation without no further major changes in the application code.
 
 For more information follow the link [Linear Algebra](linear_algebra)
